@@ -1,0 +1,318 @@
+package fsannsim;
+import java.awt.event.*;
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.table.*;
+import java.util.*;
+import java.io.*;
+
+public class TaskManager extends JInternalFrame implements ActionListener, Serializable{
+    public TaskManager() {
+        try {
+            jbInit();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static final String LOOP_START = "Loop Start";
+	public static final String LOOP_END = "Loop End";
+	public static final String ADAPT_INPUT = "Adapt The Input";
+	public static final String SINGLE_STEP = "Single Step";
+	public static final String N_STEP = "Run N Step";
+
+	JComboBox cboInput;
+	JComboBox cboRunType;
+	JTextField txtParam;
+	JComboBox combobox;
+	JComboBox inputbox;
+
+	JButton btnAdd;
+	JButton btnInsert;
+	JButton btnDelete;
+
+	//JButton btnUp;
+	//JButton btnDown;
+	JButton btnOK;
+
+	JTable tblTasks;
+	Vector tblHeadings;
+	private Vector tblRows;
+
+	Simulator sMain;
+
+	public TaskManager(Simulator sMain){
+		super("Task Manager", false, true, true, true);
+		this.sMain = sMain;
+
+		getInputs();
+
+		getContentPane().setLayout(new BorderLayout(5,0));
+		getContentPane().add(new JLabel("  "), BorderLayout.WEST);
+		getContentPane().add(new JLabel("  "), BorderLayout.EAST);
+		//North Panel
+					cboInput = new JComboBox();
+						cboInput.addItem("All");
+						int n = getInputs();
+			  			for(int i = 0; i < n; i++){
+			  				cboInput.addItem(""+(i+1));
+			  			}
+					cboRunType = new JComboBox();
+						cboRunType.addItem(LOOP_START);
+						cboRunType.addItem(LOOP_END);
+						cboRunType.addItem(ADAPT_INPUT);
+						cboRunType.addItem(SINGLE_STEP);
+						cboRunType.addItem(N_STEP);
+
+					txtParam = new JTextField(10);
+
+				JPanel pnChoice = new JPanel();
+				pnChoice.setLayout(new GridLayout(2,3,10,0));
+
+				pnChoice.add(new JLabel("Input Sample:"));
+				pnChoice.add(new JLabel("Run Type:"));
+				pnChoice.add(new JLabel("Count:"));
+
+				pnChoice.add(cboInput);
+				pnChoice.add(cboRunType);
+				pnChoice.add(txtParam);
+
+					btnAdd = new JButton("Add");
+					btnAdd.addActionListener(this);
+					btnInsert = new JButton("Insert");
+					btnInsert.addActionListener(this);
+					btnDelete = new JButton("Delete");
+					btnDelete.addActionListener(this);
+
+				JPanel pnOperation = new JPanel();
+				pnOperation.setLayout(new FlowLayout());
+
+				pnOperation.add(btnAdd);
+				pnOperation.add(btnInsert);
+				pnOperation.add(btnDelete);
+
+			JPanel pnNorth = new JPanel();
+			pnNorth.setLayout(new BorderLayout());
+
+				JLabel lblCaption;
+				lblCaption = new JLabel("Task Manager");
+				lblCaption.setFont(new Font("Arial",3,30));
+				lblCaption.setBackground(new Color(255,255,255));
+				lblCaption.setForeground(new Color(155,155,255));
+				lblCaption.setOpaque(true);
+			pnNorth.add(lblCaption, BorderLayout.NORTH);
+			pnNorth.add(pnChoice, BorderLayout.CENTER);
+			pnNorth.add(pnOperation, BorderLayout.SOUTH);
+
+		getContentPane().add(pnNorth, BorderLayout.NORTH);
+		//	/North Panel
+
+		// Center Panel
+				tblRows = new Vector();
+				tblHeadings = new Vector();
+
+					tblHeadings.addElement("Input");
+					tblHeadings.addElement("Run Type");
+					tblHeadings.addElement("Count");
+
+			tblTasks = new JTable(tblRows, tblHeadings);
+
+					combobox = new JComboBox();
+						combobox.addItem(LOOP_START);
+						combobox.addItem(LOOP_END);
+						combobox.addItem(ADAPT_INPUT);
+						combobox.addItem(SINGLE_STEP);
+						combobox.addItem(N_STEP);
+
+				TableColumn typeColumn = tblTasks.getColumn("Run Type");
+		        typeColumn.setCellEditor(new DefaultCellEditor(combobox));
+
+		  			inputbox = new JComboBox();
+			  			n = getInputs();
+			  			for(int i = 0; i < n; i++){
+			  				inputbox.addItem(""+(i+1));
+			  			}
+
+	  			TableColumn inputColumn = tblTasks.getColumn("Input");
+	  			inputColumn.setCellEditor(new DefaultCellEditor(inputbox));
+
+			//tblTasks.setIntercellSpacing(new Dimension(10, 10));
+			//tblTasks.setSize(200,200);
+
+		getContentPane().add(new JScrollPane(tblTasks), BorderLayout.CENTER);
+		//	/Center Panel
+
+		// South Panel
+				//btnUp = new JButton("Move Up");
+				//btnUp.addActionListener(this);
+				//btnDown = new JButton("Move Down");
+				//btnDown.addActionListener(this);
+				btnOK = new JButton("OK");
+				btnOK.addActionListener(this);
+
+			JPanel pnCommand = new JPanel();
+			pnCommand.setLayout(new FlowLayout());
+			//pnCommand.add(btnUp);
+			//pnCommand.add(btnDown);
+			pnCommand.add(btnOK);
+
+		getContentPane().add(pnCommand, BorderLayout.SOUTH);
+
+		// 	/South Panel
+		setSize(450,500);
+		//pack();
+		setVisible(true);
+	}
+
+	public int getNumTasks(){
+		return tblRows.size();
+	}
+
+	public String getTask(int i){
+		return (String)((Vector)tblRows.get(i)).get(1);
+	}
+
+	public int getInput(int i){
+		return Integer.parseInt((String)((Vector)tblRows.get(i)).get(0));
+	}
+
+	public long getTaskValue(int i){
+		return Long.parseLong((String)((Vector)tblRows.get(i)).get(2));
+	}
+	public void actionPerformed(ActionEvent ae){
+
+		if(ae.getSource() == btnAdd){
+			Vector data = new Vector();
+
+			String tmpstrInput = (String)cboInput.getSelectedItem();
+			String tmpstrRunType = (String)cboRunType.getSelectedItem();
+
+			if(	tmpstrRunType.equals(LOOP_START) || tmpstrRunType.equals(LOOP_END)){
+				data.add(null);
+				data.add(tmpstrRunType);
+				if(tmpstrRunType.equals(LOOP_START)){
+					if(txtParam.getText().trim().equals(""))
+						data.add("1");
+					else
+						data.add(txtParam.getText());
+				}
+				else{
+					data.add("---");
+				}
+				tblRows.add(data);
+			}
+			else{
+				if(tmpstrInput.equals("All")){
+					int n = getInputs();
+					for(int i=0; i<n; i++){
+
+						data.add(""+(i+1));
+						data.add(tmpstrRunType);
+
+						if(tmpstrRunType.equals(N_STEP)){
+							if(txtParam.getText().trim().equals(""))
+								data.add("1");
+							else
+								data.add(txtParam.getText());
+						}
+						else{
+							data.add("---");
+						}
+						tblRows.add(data);
+						data = new Vector();
+					}
+				}
+				else{
+					data.add(tmpstrInput);
+					data.add(tmpstrRunType);
+
+					if(tmpstrRunType.equals(N_STEP)){
+						if(txtParam.getText().trim().equals(""))
+							data.add("1");
+						else
+							data.add(txtParam.getText());
+					}
+					else{
+						data.add("---");
+					}
+					tblRows.add(data);
+				}
+			}
+		}
+		else if(ae.getSource() == btnInsert){
+			int sel = tblTasks.getSelectedRow();
+			Vector data = new Vector();
+
+			String tmpstrInput = (String)cboInput.getSelectedItem();
+			String tmpstrRunType = (String)cboRunType.getSelectedItem();
+
+			if(	tmpstrRunType.equals(LOOP_START) || tmpstrRunType.equals(LOOP_END)){
+				data.add(null);
+				data.add(tmpstrRunType);
+				if(tmpstrRunType.equals(LOOP_START)){
+					if(txtParam.getText().trim().equals(""))
+						data.add("1");
+					else
+						data.add(txtParam.getText());
+				}
+				else{
+					data.add("---");
+				}
+				tblRows.insertElementAt( data, sel);
+			}
+			else{
+				if(!tmpstrInput.equals("All")){
+					data.add(tmpstrInput);
+					data.add(tmpstrRunType);
+
+					if(tmpstrRunType.equals(N_STEP)){
+						if(txtParam.getText().trim().equals(""))
+							data.add("1");
+						else
+							data.add(txtParam.getText());
+					}
+					else{
+						data.add("---");
+					}
+					System.out.println("asa");
+					tblRows.insertElementAt(data, sel);
+				}
+			}
+
+		}
+		else if(ae.getSource() == btnDelete){
+			int sel = tblTasks.getSelectedRow();
+			tblRows.remove(sel);
+		}
+		//else if(ae.getSource() == btnUp){
+		//	System.out.println("Update");
+		//}
+		//else if(ae.getSource() == btnDown){
+		//	System.out.println("Update");
+		//}
+		else
+		{
+			//System.out.println("None");
+			dispose();
+		}
+		tblTasks.updateUI();
+	}
+
+        public void saveData(ObjectOutputStream oos){
+            oos.writeObject(tblRows);
+        }
+        
+        public void loadData(ObjectInputStream ois){
+            
+        }
+
+	private int getInputs(){
+		if(sMain.idata != null)
+			return sMain.idata.rowData.size();
+		else
+			return 0;
+	}
+
+    private void jbInit() throws Exception {
+    }
+}

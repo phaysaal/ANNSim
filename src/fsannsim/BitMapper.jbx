@@ -1,0 +1,33 @@
+[PropertyInfo]
+btnBrowse,javax.swing.JButton,false,false, , ,false,<default>
+btnClear,javax.swing.JButton,false,false, , ,false,<default>
+btnGenerate,javax.swing.JButton,false,false, , ,false,<default>
+btnResize,javax.swing.JButton,false,false, , ,false,<default>
+btnRestart,javax.swing.JButton,false,false, , ,false,<default>
+btnSave,javax.swing.JButton,false,false, , ,false,<default>
+flag,boolean[][],false,false, , ,false,<default>
+h,int,false,false, , ,false,<default>
+jfc,javax.swing.JFileChooser,false,false, , ,false,<default>
+JLabel1,javax.swing.JLabel,false,false, , ,false,<default>
+JLabel2,javax.swing.JLabel,false,false, , ,false,<default>
+JLabel3,javax.swing.JLabel,false,false, , ,false,<default>
+JLabel4,javax.swing.JLabel,false,false, , ,false,<default>
+JLabel5,javax.swing.JLabel,false,false, , ,false,<default>
+JLabel6,javax.swing.JLabel,false,false, , ,false,<default>
+JScrollPane1,javax.swing.JScrollPane,false,false, , ,false,<default>
+s,int,false,false, , ,false,<default>
+selectedFile,java.io.File,false,false, , ,false,<default>
+txtCodes,javax.swing.JTextArea,false,false, , ,false,<default>
+txtFile,javax.swing.JTextField,false,false, , ,false,<default>
+txtH,javax.swing.JTextField,false,false, , ,false,<default>
+txtOutput,javax.swing.JTextField,false,false, , ,false,<default>
+txtS,javax.swing.JTextField,false,false, , ,false,<default>
+txtW,javax.swing.JTextField,false,false, , ,false,<default>
+w,int,false,false, , ,false,<default>
+x,int,false,false, , ,false,<default>
+y,int,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

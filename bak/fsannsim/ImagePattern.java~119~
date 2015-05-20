@@ -1,0 +1,699 @@
+package fsannsim;
+
+import java.awt.BorderLayout;
+
+import javax.swing.JPanel;
+import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JSpinner;
+import javax.swing.JButton;
+import javax.swing.JScrollBar;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
+import javax.swing.BorderFactory;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.Border;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.*;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.FileNotFoundException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.util.Vector;
+
+/**
+ * <p>Title: Fs ANN Sim</p>
+ *
+ * <p>Description: Artificial Neural Network Simulator</p>
+ *
+ * <p>Copyright: Open Source and Open Resource </p>
+ *
+ * <p>Company: F Sharp</p>
+ *
+ * @author Mahmudul Faisal Al Ameen
+ * @version 1.0
+ */
+public class ImagePattern extends JPanel {
+    int picdata[][][] = null;
+    boolean isImageExists = false;
+    final static int LEFT = 15;
+    final static int TOP = 20;
+    final static int WIDTH = 215;
+    final static int HEIGHT = 180;
+
+    public ImagePattern() {
+        try {
+            jbInit();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        spXPix.setValue(new Integer(50));
+        spYPix.setValue(new Integer(50));
+        rdoBW.setSelected(true);
+        rdoHorz.setSelected(true);
+    }
+
+    private void jbInit() throws Exception {
+        setLayout(null);
+        jLabel1.setText("X Pixel ");
+        jLabel1.setBounds(new Rectangle(264, 68, 66, 22));
+        spXPix.setBounds(new Rectangle(264, 91, 50, 20));
+        spXPix.addChangeListener(new ImagePattern_spXPix_changeAdapter(this));
+        jLabel2.setText("Y Pixel");
+        jLabel2.setBounds(new Rectangle(325, 69, 58, 20));
+        btnZoomOut.setBounds(new Rectangle(262, 39, 44, 24));
+        btnZoomOut.setText("-");
+
+        spYPix.setBounds(new Rectangle(326, 91, 50, 20));
+        spYPix.addChangeListener(new ImagePattern_spYPix_changeAdapter(this));
+        btnLoad.setBounds(new Rectangle(262, 197, 114, 24));
+        btnLoad.setText("Load Image");
+        btnLoad.addActionListener(new ImagePattern_btnLoad_actionAdapter(this));
+        rdoHorz.setText("Horizontal");
+        rdoHorz.setBounds(new Rectangle(18, 244, 96, 22));
+        rdoVert.setMaximumSize(new Dimension(73, 23));
+        rdoVert.setMinimumSize(new Dimension(73, 23));
+        rdoVert.setText("Vertical");
+        rdoVert.setBounds(new Rectangle(121, 244, 91, 22));
+
+        this.setBorder(border1);
+        this.setDebugGraphicsOptions(0);
+        btnEncode.setBounds(new Rectangle(276, 239, 100, 23));
+        btnEncode.setText("EnCode");
+        btnEncode.addActionListener(new ImagePattern_btnEncode_actionAdapter(this));
+        jLabel3.setText("Left :");
+        jLabel3.setBounds(new Rectangle(263, 112, 55, 26));
+        spLeft.setBounds(new Rectangle(264, 135, 50, 20));
+        spLeft.addChangeListener(new ImagePattern_spLeft_changeAdapter(this));
+        spTop.setInputVerifier(null);
+        spTop.setBounds(new Rectangle(326, 135, 50, 20));
+        spTop.addChangeListener(new ImagePattern_spTop_changeAdapter(this));
+        jLabel4.setText("Top:");
+        jLabel4.setBounds(new Rectangle(326, 117, 52, 18));
+        jLabel5.setText("Right:");
+        jLabel5.setBounds(new Rectangle(262, 155, 56, 19));
+        jLabel6.setText("Bottom:");
+        jLabel6.setBounds(new Rectangle(326, 156, 54, 19));
+        spWidth.setBounds(new Rectangle(264, 173, 50, 20));
+        spWidth.addChangeListener(new ImagePattern_spWidth_changeAdapter(this));
+        spHeight.setBounds(new Rectangle(326, 173, 50, 20));
+        spHeight.addChangeListener(new ImagePattern_spHeight_changeAdapter(this));
+        rdoColor.setText("Color");
+        rdoColor.setBounds(new Rectangle(194, 226, 69, 19));
+        rdoColor.addActionListener(new ImagePattern_rdoColor_actionAdapter(this));
+        rdoBW.setText("Black/White");
+        rdoBW.setBounds(new Rectangle(18, 223, 93, 20));
+        rdoBW.addActionListener(new ImagePattern_jRadioButton1_actionAdapter(this));
+        rdoGray.setText("Gray");
+        rdoGray.setBounds(new Rectangle(121, 224, 70, 18));
+        rdoGray.addActionListener(new ImagePattern_rdoGray_actionAdapter(this));
+        jScrollPane1.setBounds(new Rectangle(17, 298, 356, 48));
+        txtCode.setText("");
+        rdoColor.addActionListener(new ImagePattern_rdoColor_actionAdapter(this));
+        jLabel7.setToolTipText("");
+        jLabel7.setText("Normalize Factor");
+        jLabel7.setBounds(new Rectangle(23, 272, 101, 18));
+        txtFactor.setBounds(new Rectangle(129, 271, 112, 23));
+        jLabel8.setText("Total Length :");
+        jLabel8.setBounds(new Rectangle(17, 350, 89, 19));
+        lblTotal.setText("");
+        lblTotal.setBounds(new Rectangle(115, 349, 79, 21));
+        jLabel9.setFont(new java.awt.Font("Dialog", Font.ITALIC, 11));
+        jLabel9.setText("Note: Manual Input is Possible");
+        jLabel9.setBounds(new Rectangle(215, 342, 169, 22));
+        jLabel10.setText("Width :");
+        jLabel10.setBounds(new Rectangle(262, 28, 56, 17));
+        jLabel11.setText("Height:");
+        jLabel11.setBounds(new Rectangle(263, 48, 63, 19));
+        lblWidth.setBounds(new Rectangle(309, 26, 62, 20));
+        lblHeight.setBounds(new Rectangle(309, 46, 61, 20));
+        this.add(jLabel1);
+        this.add(spXPix);
+        this.add(spYPix);
+        this.add(jLabel3);
+        this.add(spLeft);
+        this.add(spTop);
+        this.add(jLabel4);
+        this.add(jLabel2);
+        this.add(jLabel5);
+        this.add(jLabel6);
+        this.add(spWidth);
+        this.add(spHeight);
+        this.add(btnLoad);
+
+        this.add(jScrollPane1);
+        this.add(rdoBW);
+        this.add(rdoGray);
+        this.add(rdoColor);
+        this.add(rdoVert);
+        this.add(rdoHorz);
+        this.add(btnEncode);
+        this.add(jLabel7);
+        this.add(txtFactor);
+        this.add(jLabel8);
+        this.add(lblTotal);
+        this.add(jLabel9);
+        this.add(jLabel10);
+        this.add(jLabel11);
+        this.add(lblHeight);
+        this.add(lblWidth);
+        jScrollPane1.getViewport().add(txtCode);
+        buttonGroup1.add(rdoHorz);
+        buttonGroup1.add(rdoVert);
+        buttonGroup2.add(rdoColor);
+        buttonGroup2.add(rdoBW);
+        buttonGroup2.add(rdoGray);
+    }
+
+    public static void main(String[] args) {
+        ImagePattern imagepattern = new ImagePattern();
+    }
+
+    JLabel jLabel1 = new JLabel();
+    JSpinner spXPix = new JSpinner();
+    JLabel jLabel2 = new JLabel();
+    JButton btnZoomOut = new JButton();
+    JSpinner spYPix = new JSpinner();
+    JButton btnLoad = new JButton();
+    JRadioButton rdoHorz = new JRadioButton();
+    JRadioButton rdoVert = new JRadioButton();
+    ButtonGroup buttonGroup1 = new ButtonGroup();
+    Border border1 = BorderFactory.createEtchedBorder(EtchedBorder.RAISED,
+            Color.white, new Color(165, 163, 151));
+    JButton btnEncode = new JButton();
+    JLabel jLabel3 = new JLabel();
+    JSpinner spLeft = new JSpinner();
+    JSpinner spTop = new JSpinner();
+    JLabel jLabel4 = new JLabel();
+    JLabel jLabel5 = new JLabel();
+    JLabel jLabel6 = new JLabel();
+    JSpinner spWidth = new JSpinner();
+    JSpinner spHeight = new JSpinner();
+    JRadioButton rdoColor = new JRadioButton();
+    JRadioButton rdoBW = new JRadioButton();
+    JRadioButton rdoGray = new JRadioButton();
+    ButtonGroup buttonGroup2 = new ButtonGroup();
+    JScrollPane jScrollPane1 = new JScrollPane();
+    JTextArea txtCode = new JTextArea();
+    JLabel jLabel7 = new JLabel();
+    JTextField txtFactor = new JTextField();
+    JLabel jLabel8 = new JLabel();
+    JLabel lblTotal = new JLabel();
+    JLabel jLabel9 = new JLabel();
+    JLabel jLabel10 = new JLabel();
+    JLabel jLabel11 = new JLabel();
+    JLabel lblWidth = new JLabel();
+    JLabel lblHeight = new JLabel();
+
+    public void btnLoad_actionPerformed(ActionEvent e) {
+        JFileChooser jfc = new JFileChooser();
+        jfc.showOpenDialog(this);
+        if (jfc.getSelectedFile() == null) {
+            return;
+        }
+        try {
+            RandomAccessFile ras = new RandomAccessFile(jfc.getSelectedFile(),
+                    "r");
+
+            //load();
+            int width, height;
+
+            int i = 0;
+            ras.seek(18);
+            int w1 = ras.read();
+            int w2 = ras.read();
+            width = w2 * 256 + w1;
+
+            ras.seek(22);
+            int h1 = ras.read();
+            int h2 = ras.read();
+            height = h2 * 256 + h1;
+
+            picdata = new int[height][width][3];
+            ras.seek(54);
+            int j, k;
+            int left = 50, top = 50 + height;
+            int count = 0;
+            long sc = (ras.length() - ((width * height * 3) + 53)) / height;
+            for (i = height - 1; i > -1; i--) {
+                for (j = 0; j < width; j++) {
+                    picdata[i][j][2] = ras.read();
+                    picdata[i][j][1] = ras.read();
+                    picdata[i][j][0] = ras.read();
+                }
+                for (k = 0; k < sc; k++) {
+                    ras.read();
+                }
+            }
+
+            lblWidth.setText("" + width);
+            lblHeight.setText("" + height);
+            //spXPix.setValue(new Integer(width));
+            //spYPix.setValue(new Integer(height));
+
+            isImageExists = true;
+            repaint();
+        } catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
+            /** @todo Handle this exception */
+        }
+
+    }
+
+    private boolean isClash() {
+        if (picdata == null) {
+            return false;
+        }
+        int x = ((Integer) spXPix.getValue()).intValue();
+        int y = ((Integer) spYPix.getValue()).intValue();
+        int l = ((Integer) spLeft.getValue()).intValue();
+        int t = ((Integer) spTop.getValue()).intValue();
+        int w = ((Integer) spWidth.getValue()).intValue();
+        int h = ((Integer) spHeight.getValue()).intValue();
+        int mw = picdata[0].length;
+        int mh = picdata.length;
+
+        boolean isclear = false;
+        isclear = ((l + w) < mw) && (x < 230);
+        isclear = isclear &&
+                  ((t + h) < mh) && (y < 200);
+        return (!isclear);
+    }
+
+    private Object setAppropriateValue(Object value) {
+        int val = ((Integer) value).intValue();
+        if (val < 0) {
+            return (new Integer(0));
+        } else if (isClash()) {
+            return (new Integer(val - 1));
+        } else {
+            return value;
+        }
+    }
+
+    private void changePixValue() {
+        int val;
+        val = picdata[0].length - (((Integer) spLeft.getValue()).intValue() +
+                                   ((Integer) spWidth.getValue()).intValue());
+        if (val < ((Integer) spXPix.getValue()).intValue()) {
+            spXPix.setValue(new Integer(val));
+        }
+        val = picdata.length - (((Integer) spTop.getValue()).intValue() +
+                                ((Integer) spHeight.getValue()).intValue());
+        if (val < ((Integer) spYPix.getValue()).intValue()) {
+            spYPix.setValue(new Integer(val));
+        }
+
+    }
+
+    public void spXPix_stateChanged(ChangeEvent e) {
+        int val = ((Integer) (spXPix.getValue())).intValue();
+        int nVal = -1;
+        if (val < 1) {
+            nVal = 1;
+        } else if (val > 230) {
+            nVal = 230;
+        }
+        if (nVal > 0) {
+            spXPix.setValue(new Integer(nVal));
+        }
+        //if(((Integer)spWidth.getValue()).intValue() < ((Integer)spXPix.getValue()).intValue()){
+        ///    spWidth.setValue(spXPix.getValue());
+        //}
+
+        repaint();
+    }
+
+    public void spYPix_stateChanged(ChangeEvent e) {
+        int val = ((Integer) (spYPix.getValue())).intValue();
+        int nVal = -1;
+        if (val < 1) {
+            nVal = 1;
+        } else if (val > 200) {
+            nVal = 200;
+        }
+        if (nVal > 0) {
+            spYPix.setValue(new Integer(nVal));
+        }
+
+        //if(((Integer)spHeight.getValue()).intValue() < ((Integer)spYPix.getValue()).intValue()){
+        //    spHeight.setValue(spYPix.getValue());
+        //}
+
+        repaint();
+    }
+
+    public void spLeft_stateChanged(ChangeEvent e) {
+        //if(isClash())
+        spLeft.setValue(setAppropriateValue(spLeft.getValue()));
+        changePixValue();
+        repaint();
+    }
+
+    public void spTop_stateChanged(ChangeEvent e) {
+        //if(isClash())
+        spTop.setValue(setAppropriateValue(spTop.getValue()));
+        changePixValue();
+        repaint();
+    }
+
+    public void spWidth_stateChanged(ChangeEvent e) {
+        //if(isClash())
+        spWidth.setValue(setAppropriateValue(spWidth.getValue()));
+        changePixValue();
+        repaint();
+    }
+
+    public void spHeight_stateChanged(ChangeEvent e) {
+        //if(isClash())
+        spHeight.setValue(setAppropriateValue(spHeight.getValue()));
+        changePixValue();
+        repaint();
+    }
+
+    private double getCodeValue(int[] cols) {
+        int col = (cols[0] + cols[1] + cols[2]) / 3;
+        double factor;
+        try {
+            factor = Double.parseDouble(txtFactor.getText());
+            factor = factor <= 0 ? 1 : factor;
+        } catch (Exception e) {
+            factor = 1;
+        }
+        if (rdoColor.isSelected()) {
+            return factor * (1-(((cols[0] * 0xFF + cols[1]) * 0xFF + cols[2]) /
+                             (double) (0xFFFFFF)));
+        } else if (rdoGray.isSelected()) {
+            return factor * (1-(col / (double) 0xFF));
+        } else {
+            if (col > 128) {
+                return 0;
+            } else {
+                return factor;
+            }
+        }
+
+    }
+
+    private String encodeHorz() {
+        String codes = "";
+        int i, j, k = 0;
+        int m,n;
+        double ii, jj, mx, my;
+        mx = (picdata[0].length -
+              ((Integer) spLeft.getValue()).intValue() -
+              ((Integer) spWidth.getValue()).intValue()) /
+             (double) ((Integer) spXPix.getValue()).intValue();
+        my = (picdata.length -
+              ((Integer) spTop.getValue()).intValue() -
+              ((Integer) spHeight.getValue()).intValue()) /
+             (double) ((Integer) spYPix.getValue()).intValue();
+        /*
+         if(mx<1 || my<1){
+            int lx = (picdata[0].length -
+                      ((Integer) spLeft.getValue()).intValue() -
+                      ((Integer) spWidth.getValue()).intValue());
+            int ly = (picdata.length -
+                      ((Integer) spTop.getValue()).intValue() -
+                      ((Integer) spHeight.getValue()).intValue());
+
+         JOptionPane.showMessageDialog(this,"Limit of Resolution is "+lx+"x"+ly);
+            return "";
+         }//*/
+        for (m=0, ii = ((Integer) spTop.getValue()).intValue();
+                  m < ((Integer)spYPix.getValue()).intValue() ;
+                  m++, ii += my) {
+            for (n = 0, jj = ((Integer) spLeft.getValue()).intValue();
+                      n < ((Integer)spXPix.getValue()).intValue() ;
+                      n++, jj += mx) {
+                k++;
+                i = (int) ii;
+                j = (int) jj;
+                codes += (getCodeValue(picdata[i][j]) + " ");
+            }
+        }
+
+        lblTotal.setText("" + k);
+        return codes;
+    }
+
+    private String encodeVert() {
+        String codes = "";
+        int i, j, m,n,k = 0;
+        double ii, jj, mx, my;
+        mx = (picdata[0].length -
+              ((Integer) spLeft.getValue()).intValue() -
+              ((Integer) spWidth.getValue()).intValue()) /
+             (double) ((Integer) spXPix.getValue()).intValue();
+        my = (picdata.length -
+              ((Integer) spTop.getValue()).intValue() -
+              ((Integer) spHeight.getValue()).intValue()) /
+             (double) ((Integer) spYPix.getValue()).intValue();
+
+        for (m=0,jj = ((Integer) spLeft.getValue()).intValue();
+                  m < ((Integer)spXPix.getValue()).intValue() ;
+                  m++, jj += mx) {
+            for (n=0, ii = ((Integer) spTop.getValue()).intValue();
+                      n < ((Integer)spYPix.getValue()).intValue();
+                      n++, ii += my) {
+                k++;
+                i = (int) ii;
+                j = (int) jj;
+                codes += (getCodeValue(picdata[i][j]) + " ");
+            }
+        }
+        lblTotal.setText("" + k);
+        return codes;
+
+    }
+
+    public void btnEncode_actionPerformed(ActionEvent e) {
+        if (rdoHorz.isSelected()) {
+            txtCode.setText(encodeHorz());
+        } else {
+            txtCode.setText(encodeVert());
+        }
+
+        repaint();
+    }
+
+    public void paint(Graphics g) {
+        super.paint(g);
+        double mx = 0;
+        double my = 0;
+        if (isImageExists) {
+            if (picdata != null) {
+                int i, j, col, xx, yy;
+                double ii, jj;
+                mx = (picdata[0].length -
+                      ((Integer) spLeft.getValue()).intValue() -
+                      ((Integer) spWidth.getValue()).intValue()) /
+                     (double) ((Integer) spXPix.getValue()).intValue();
+                my = (picdata.length -
+                      ((Integer) spTop.getValue()).intValue() -
+                      ((Integer) spHeight.getValue()).intValue()) /
+                     (double) ((Integer) spYPix.getValue()).intValue();
+
+                for (ii = ((Integer) spTop.getValue()).intValue(), yy = 0;
+                        ii < picdata.length -
+                        ((Integer) spHeight.getValue()).intValue();
+                        ii += my, yy++) {
+                    for (jj = ((Integer) spLeft.getValue()).intValue(), xx = 0;
+                            jj < picdata[0].length -
+                            ((Integer) spWidth.getValue()).intValue();
+                            jj += mx, xx++) {
+
+                        i = (int) ii;
+                        j = (int) jj;
+                        col = (picdata[i][j][0] + picdata[i][j][1] +
+                               picdata[i][j][2]) /
+                              3;
+                        if (rdoColor.isSelected()) {
+                            g.setColor(new Color(picdata[i][j][0],
+                                                 picdata[i][j][1],
+                                                 picdata[i][j][2]));
+                        } else if (rdoGray.isSelected()) {
+                            g.setColor(new Color(col,
+                                                 col,
+                                                 col));
+                        } else {
+                            if (col < 128) {
+                                g.setColor(Color.BLACK);
+                            } else {
+                                g.setColor(Color.WHITE);
+                            }
+
+                        }
+                        g.fillRect(LEFT + xx, TOP + yy, 1, 1);
+                    }
+                }
+            }
+
+        }
+    }
+
+    public void rdoColor_actionPerformed(ActionEvent e) {
+        repaint();
+    }
+
+    public void rdoBW_actionPerformed(ActionEvent e) {
+        repaint();
+    }
+
+    public void rdoGray_actionPerformed(ActionEvent e) {
+        repaint();
+    }
+
+    public String getCode() {
+        return txtCode.getText();
+    }
+
+    /**
+     * jRadioButton2_actionPerformed
+     *
+     * @param e ActionEvent
+     */
+    private void jRadioButton2_actionPerformed(ActionEvent e) {
+    }
+}
+
+
+class ImagePattern_rdoGray_actionAdapter implements ActionListener {
+    private ImagePattern adaptee;
+    ImagePattern_rdoGray_actionAdapter(ImagePattern adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        adaptee.rdoGray_actionPerformed(e);
+    }
+}
+
+
+class ImagePattern_rdoColor_actionAdapter implements ActionListener {
+    private ImagePattern adaptee;
+    ImagePattern_rdoColor_actionAdapter(ImagePattern adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+
+        adaptee.rdoColor_actionPerformed(e);
+    }
+}
+
+
+class ImagePattern_jRadioButton1_actionAdapter implements ActionListener {
+    private ImagePattern adaptee;
+    ImagePattern_jRadioButton1_actionAdapter(ImagePattern adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        adaptee.rdoBW_actionPerformed(e);
+    }
+}
+
+
+class ImagePattern_btnEncode_actionAdapter implements ActionListener {
+    private ImagePattern adaptee;
+    ImagePattern_btnEncode_actionAdapter(ImagePattern adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        adaptee.btnEncode_actionPerformed(e);
+    }
+}
+
+
+class ImagePattern_spHeight_changeAdapter implements ChangeListener {
+    private ImagePattern adaptee;
+    ImagePattern_spHeight_changeAdapter(ImagePattern adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void stateChanged(ChangeEvent e) {
+        adaptee.spHeight_stateChanged(e);
+    }
+}
+
+
+class ImagePattern_spWidth_changeAdapter implements ChangeListener {
+    private ImagePattern adaptee;
+    ImagePattern_spWidth_changeAdapter(ImagePattern adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void stateChanged(ChangeEvent e) {
+        adaptee.spWidth_stateChanged(e);
+    }
+}
+
+
+class ImagePattern_spTop_changeAdapter implements ChangeListener {
+    private ImagePattern adaptee;
+    ImagePattern_spTop_changeAdapter(ImagePattern adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void stateChanged(ChangeEvent e) {
+        adaptee.spTop_stateChanged(e);
+    }
+}
+
+
+class ImagePattern_spLeft_changeAdapter implements ChangeListener {
+    private ImagePattern adaptee;
+    ImagePattern_spLeft_changeAdapter(ImagePattern adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void stateChanged(ChangeEvent e) {
+        adaptee.spLeft_stateChanged(e);
+    }
+}
+
+
+class ImagePattern_spXPix_changeAdapter implements ChangeListener {
+    private ImagePattern adaptee;
+    ImagePattern_spXPix_changeAdapter(ImagePattern adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void stateChanged(ChangeEvent e) {
+        adaptee.spXPix_stateChanged(e);
+    }
+}
+
+
+class ImagePattern_spYPix_changeAdapter implements ChangeListener {
+    private ImagePattern adaptee;
+    ImagePattern_spYPix_changeAdapter(ImagePattern adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void stateChanged(ChangeEvent e) {
+        adaptee.spYPix_stateChanged(e);
+    }
+}
+
+
+class ImagePattern_btnLoad_actionAdapter implements ActionListener {
+    private ImagePattern adaptee;
+    ImagePattern_btnLoad_actionAdapter(ImagePattern adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+
+        adaptee.btnLoad_actionPerformed(e);
+    }
+}
